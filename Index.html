@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mohd Maaz — Backend Developer</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #ffffff;
+    --bg-secondary: #f7f7f5;
+    --bg-tertiary: #f0efeb;
+    --text: #1a1a1a;
+    --text-secondary: #5a5a5a;
+    --text-tertiary: #9a9a9a;
+    --border: rgba(0,0,0,0.1);
+    --border-md: rgba(0,0,0,0.18);
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    --font-mono: 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1a1a1a;
+      --bg-secondary: #242424;
+      --bg-tertiary: #2c2c2c;
+      --text: #f0f0f0;
+      --text-secondary: #aaaaaa;
+      --text-tertiary: #666666;
+      --border: rgba(255,255,255,0.1);
+      --border-md: rgba(255,255,255,0.18);
+    }
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--bg-tertiary);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .page {
+    max-width: 860px;
+    margin: 0 auto;
+    background: var(--bg);
+    min-height: 100vh;
+    padding: 2.5rem 2rem;
+  }
+
+  @media (max-width: 600px) { .page { padding: 1.5rem 1rem; } }
+
+  h1 { font-size: 26px; font-weight: 500; line-height: 1.2; }
+  h2 { font-size: 20px; font-weight: 500; }
+
+  .mono { font-family: var(--font-mono); font-size: 13px; }
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+  }
+
+  .divider { border: none; border-top: 0.5px solid var(--border); margin: 2.5rem 0; }
+
+  .tag {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    border: 0.5px solid var(--border);
+  }
+
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 0.9rem; }
+
+  .avatar {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: #EEEDFE; display: flex; align-items: center;
+    justify-content: center; font-weight: 500; font-size: 15px;
+    color: #3C3489; flex-shrink: 0;
+  }
+
+  .header-row { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 2.5rem; flex-wrap: wrap; }
+  .header-text { flex: 1; min-width: 220px; }
+  .header-text .eyebrow { font-family: var(--font-mono); font-size: 11px; color: var(--text-tertiary); margin-bottom: 0.35rem; }
+  .header-text p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; max-width: 520px; margin-top: 0.6rem; }
+
+  .arch-flow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem; }
+  .arch-box {
+    background: var(--bg-secondary);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 0.55rem 0.9rem;
+    font-size: 12px;
+    font-family: var(--font-mono);
+    text-align: center;
+    color: var(--text);
+    white-space: nowrap;
+  }
+  .arch-box small { display: block; font-size: 10px; color: var(--text-tertiary); margin-top: 2px; }
+  .arch-arrow { color: var(--text-tertiary); font-size: 16px; }
+
+  .tab-row {
+    display: flex;
+    border-bottom: 0.5px solid var(--border);
+    margin-bottom: 1.25rem;
+    overflow-x: auto;
+  }
+  .tab {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    padding: 6px 14px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--text); border-bottom-color: var(--text); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  .code-block {
+    background: var(--bg-secondary);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--text);
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  .method {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 2px 7px;
+    border-radius: 3px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .get    { background: #EAF3DE; color: #3B6D11; }
+  .post   { background: #E6F1FB; color: #185FA5; }
+  .put    { background: #FAEEDA; color: #854F0B; }
+  .delete { background: #FCEBEB; color: #A32D2D; }
+
+  .endpoint-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 0; border-bottom: 0.5px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .endpoint-row:last-child { border-bottom: none; }
+  .endpoint-path { font-family: var(--font-mono); font-size: 12px; color: var(--text); }
+  .endpoint-desc { font-size: 12px; color: var(--text-secondary); margin-left: auto; }
+
+  .decision-text { font-size: 13px; color: var(--text-secondary); line-height: 1.75; }
+  .decision-text strong { color: var(--text); font-weight: 500; }
+  .decision-text code { font-family: var(--font-mono); font-size: 12px; }
+
+  .link-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 1rem; align-items: center; }
+  .pill-link {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 0.5px solid var(--border-md);
+    color: var(--text);
+    background: var(--bg);
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.15s;
+    display: inline-block;
+  }
+  .pill-link:hover { background: var(--bg-secondary); }
+
+  .badge { font-size: 11px; padding: 2px 9px; border-radius: 4px; font-family: var(--font-mono); }
+  .badge-green  { background: #EAF3DE; color: #3B6D11; }
+  .badge-blue   { background: #E6F1FB; color: #185FA5; }
+  .badge-purple { background: #EEEDFE; color: #3C3489; }
+
+  .eng-card {
+    background: var(--bg);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+  }
+  .concern-row {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    gap: 0;
+    border-bottom: 0.5px solid var(--border);
+    padding: 1rem 0;
+    align-items: start;
+  }
+  .concern-row:last-child { border-bottom: none; }
+  .concern-label { font-family: var(--font-mono); font-size: 12px; color: var(--text-tertiary); padding-top: 1px; }
+  .concern-text { font-size: 14px; color: var(--text); line-height: 1.6; }
+  .concern-text code { font-family: var(--font-mono); font-size: 12px; }
+
+  .footer {
+    display: flex; gap: 10px; align-items: center;
+    flex-wrap: wrap; padding-bottom: 1rem;
+  }
+  .footer-note {
+    font-size: 12px; color: var(--text-tertiary);
+    font-family: var(--font-mono); margin-left: auto;
+  }
+
+  @media (max-width: 500px) {
+    .concern-row { grid-template-columns: 1fr; }
+    .concern-label { margin-bottom: 4px; }
+    .endpoint-desc { margin-left: 0; width: 100%; }
+    .footer-note { margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header-row">
+    <div class="avatar">MM</div>
+    <div class="header-text">
+      <p class="eyebrow">backend developer · fresher</p>
+      <h1>Mohd Maaz</h1>
+      <p>I build backend systems — auth services, REST APIs, async workers, and structured databases. Three production-deployed projects below. All running live.</p>
+      <div class="tags">
+        <span class="tag">FastAPI</span>
+        <span class="tag">Flask</span>
+        <span class="tag">PostgreSQL</span>
+        <span class="tag">MySQL</span>
+        <span class="tag">SQLAlchemy</span>
+        <span class="tag">Alembic</span>
+        <span class="tag">JWT</span>
+        <span class="tag">Pydantic</span>
+        <span class="tag">Pytest</span>
+        <span class="tag">Docker</span>
+        <span class="tag">Railway</span>
+        <span class="tag">Render</span>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Project 01 -->
+  <div style="margin-bottom:2.5rem">
+    <p class="section-label">Project 01</p>
+    <h2 style="margin-bottom:0.4rem">Book &amp; Notes Management System</h2>
+    <p style="font-size:14px;color:var(--text-secondary);line-height:1.6;margin-bottom:1.25rem;max-width:640px">A full-stack study workspace where users register, log in, create books, and organise notes — accessible through both a browser UI and a REST API. Built to cover the complete backend surface: auth, migrations, validation, testing, and cloud deployment.</p>
+
+    <div class="tab-row">
+      <button class="tab active" onclick="switchTab(this,'p1')">Architecture</button>
+      <button class="tab" onclick="switchTab(this,'p1')">Endpoints</button>
+      <button class="tab" onclick="switchTab(this,'p1')">Sample</button>
+      <button class="tab" onclick="switchTab(this,'p1')">Decisions</button>
+    </div>
+
+    <div id="p1-0" class="tab-panel active">
+      <div class="arch-flow">
+        <div class="arch-box">Browser / client</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box">FastAPI router<small>Jinja2 · validation</small></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box">Service layer<small>auth · CRUD logic</small></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box">PostgreSQL<small>Alembic migrations</small></div>
+      </div>
+      <p style="font-size:13px;color:var(--text-secondary);line-height:1.6">Session-based auth for the browser UI; JWT for the API layer. Alembic handles all schema migrations — the database is never modified by hand. SQLAlchemy models define the schema; Pydantic schemas handle request/response validation at the boundary.</p>
+    </div>
+
+    <div id="p1-1" class="tab-panel">
+      <div class="endpoint-row"><span class="method post">POST</span><span class="endpoint-path">/auth/register</span><span class="endpoint-desc">Register new user</span></div>
+      <div class="endpoint-row"><span class="method post">POST</span><span class="endpoint-path">/auth/login</span><span class="endpoint-desc">Login, returns session / token</span></div>
+      <div class="endpoint-row"><span class="method get">GET</span><span class="endpoint-path">/books</span><span class="endpoint-desc">List all books for user</span></div>
+      <div class="endpoint-row"><span class="method post">POST</span><span class="endpoint-path">/books</span><span class="endpoint-desc">Create a new book</span></div>
+      <div class="endpoint-row"><span class="method get">GET</span><span class="endpoint-path">/books/{id}/notes</span><span class="endpoint-desc">All notes for a book</span></div>
+      <div class="endpoint-row"><span class="method post">POST</span><span class="endpoint-path">/books/{id}/notes</span><span class="endpoint-desc">Add note to book</span></div>
+      <div class="endpoint-row"><span class="method put">PUT</span><span class="endpoint-path">/notes/{id}</span><span class="endpoint-desc">Edit note</span></div>
+      <div class="endpoint-row"><span class="method delete">DEL</span><span class="endpoint-path">/notes/{id}</span><span class="endpoint-desc">Delete note</span></div>
+    </div>
+
+    <div id="p1-2" class="tab-panel">
+      <div class="code-block">POST /auth/login
+{ "email": "maaz@example.com", "password": "••••••••" }
+
+──────────────────────────────────────────
+HTTP 200 OK
+{
+  "access_token": "eyJhbGciOiJIUzI1NiJ9...",
+  "token_type": "bearer",
+  "user": { "id": 1, "email": "maaz@example.com" }
+}
+
+──────────────────────────────────────────
+POST /books/3/notes
+Authorization: Bearer eyJhbGci...
+{ "title": "Chapter 2 Summary", "content": "Key concepts..." }
+
+HTTP 201 Created
+{
+  "id": 17,
+  "title": "Chapter 2 Summary",
+  "book_id": 3,
+  "created_at": "2025-04-08T10:22:00Z"
+}</div>
+    </div>
+
+    <div id="p1-3" class="tab-panel">
+      <p class="decision-text">
+        <strong>Why Alembic instead of auto-migrate?</strong> SQLAlchemy's <code>create_all()</code> is fine for prototypes but gives you no migration history, no rollbacks, and no safe path to production. Alembic keeps every schema change versioned and reversible.<br><br>
+        <strong>Why both a browser UI and a REST API?</strong> Server-rendered Jinja templates serve the UI without any frontend framework overhead, while the API layer keeps the backend independently testable and consumable by other clients. One codebase, two interfaces.
+      </p>
+    </div>
+
+    <div class="link-row">
+      <a class="pill-link" href="https://book-notes-management-system-production.up.railway.app/" target="_blank" rel="noopener">↗ Live demo</a>
+      <a class="pill-link" href="https://github.com/MohdMaaz000" target="_blank" rel="noopener">↗ GitHub</a>
+      <span class="badge badge-green">deployed · Railway</span>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Project 02 -->
+  <div style="margin-bottom:2.5rem">
+    <p class="section-label">Project 02</p>
+    <h2 style="margin-bottom:0.4rem">Task Manager API</h2>
+    <p style="font-size:14px;color:var(--text-secondary);line-height:1.6;margin-bottom:1.25rem;max-width:640px">Production-style REST API for task management. Flask, SQLAlchemy, and JWT authentication — with a full automated test suite. Built to demonstrate that a clean Flask API can match the structure and reliability expectations of a FastAPI project.</p>
+
+    <div class="tab-row">
+      <button class="tab active" onclick="switchTab(this,'p2')">Architecture</button>
+      <button class="tab" onclick="switchTab(this,'p2')">Endpoints</button>
+      <button class="tab" onclick="switchTab(this,'p2')">Sample</button>
+      <button class="tab" onclick="switchTab(this,'p2')">Decisions</button>
+    </div>
+
+    <div id="p2-0" class="tab-panel active">
+      <div class="arch-flow">
+        <div class="arch-box">API client</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box">Flask blueprint<small>JWT middleware</small></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box">Service / model<small>SQLAlchemy ORM</small></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box">MySQL / SQLite<small>prod · test</small></div>
+      </div>
+      <p style="font-size:13px;color:var(--text-secondary);line-height:1.6">JWT tokens protect all task endpoints. Blueprints separate auth routes from task routes — each concern is independently testable. SQLite in test mode, MySQL in production; SQLAlchemy abstracts the difference so application code doesn't change between environments.</p>
+    </div>
+
+    <div id="p2-1" class="tab-panel">
+      <div class="endpoint-row"><span class="method post">POST</span><span class="endpoint-path">/auth/register</span><span class="endpoint-desc">Register user</span></div>
+      <div class="endpoint-row"><span class="method post">POST</span><span class="endpoint-path">/auth/login</span><span class="endpoint-desc">Get JWT access token</span></div>
+      <div class="endpoint-row"><span class="method get">GET</span><span class="endpoint-path">/tasks</span><span class="endpoint-desc">List tasks (auth required)</span></div>
+      <div class="endpoint-row"><span class="method post">POST</span><span class="endpoint-path">/tasks</span><span class="endpoint-desc">Create task</span></div>
+      <div class="endpoint-row"><span class="method put">PUT</span><span class="endpoint-path">/tasks/{id}</span><span class="endpoint-desc">Update task / mark done</span></div>
+      <div class="endpoint-row"><span class="method delete">DEL</span><span class="endpoint-path">/tasks/{id}</span><span class="endpoint-desc">Delete task</span></div>
+    </div>
+
+    <div id="p2-2" class="tab-panel">
+      <div class="code-block">POST /tasks
+Authorization: Bearer eyJhbGci...
+{
+  "title": "Write API documentation",
+  "due_date": "2025-04-15",
+  "priority": "high"
+}
+
+──────────────────────────────────────────
+HTTP 201 Created
+{
+  "id": 9,
+  "title": "Write API documentation",
+  "status": "pending",
+  "priority": "high",
+  "due_date": "2025-04-15",
+  "owner_id": 2
+}
+
+──────────────────────────────────────────
+PUT /tasks/9
+{ "status": "done" }
+
+HTTP 200 OK
+{ "id": 9, "status": "done", "updated_at": "2025-04-08T14:05:00Z" }</div>
+    </div>
+
+    <div id="p2-3" class="tab-panel">
+      <p class="decision-text">
+        <strong>Why Flask and not FastAPI here?</strong> Flask is still the dominant choice in many production codebases. Understanding both frameworks — and their different approaches to routing, middleware, and testing — is more useful than knowing one deeply.<br><br>
+        <strong>Why automated tests?</strong> The live API on Render is proof of deployment; the test suite is proof of engineering discipline. Tests cover auth edge cases (expired token, wrong credentials) and task state transitions, not just the happy path.
+      </p>
+    </div>
+
+    <div class="link-row">
+      <a class="pill-link" href="https://task-manager-api-hl7l.onrender.com/doc" target="_blank" rel="noopener">↗ Live API docs</a>
+      <a class="pill-link" href="https://github.com/MohdMaaz000/Task-Manager-API" target="_blank" rel="noopener">↗ GitHub repo</a>
+      <span class="badge badge-blue">deployed · Render</span>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Project 03 -->
+  <div style="margin-bottom:2.5rem">
+    <p class="section-label">Project 03</p>
+    <h2 style="margin-bottom:0.4rem">MemoStack Backend</h2>
+    <p style="font-size:14px;color:var(--text-secondary);line-height:1.6;margin-bottom:1.25rem;max-width:640px">High-performance FastAPI backend for structured note-taking and collaborative book annotations. JWT access + refresh token auth, peer comment system, rate limiting, global request logging, and a clean services layer separating business logic from route handlers.</p>
+
+    <div class="tab-row">
+      <button class="tab active" onclick="switchTab(this,'p3')">Architecture</button>
+      <button class="tab" onclick="switchTab(this,'p3')">Endpoints</button>
+      <button class="tab" onclick="switchTab(this,'p3')">Sample</button>
+      <button class="tab" onclick="switchTab(this,'p3')">Decisions</button>
+    </div>
+
+    <div id="p3-0" class="tab-panel active">
+      <div class="arch-flow">
+        <div class="arch-box">Client</div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box">FastAPI router<small>rate-limit · CORS · logging</small></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box">Services layer<small>business logic</small></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-box">PostgreSQL / SQLite<small>prod · dev</small></div>
+      </div>
+      <p style="font-size:13px;color:var(--text-secondary);line-height:1.6">Route handlers are thin — they validate input and call the service. The service layer owns all logic: token generation, ownership checks, comment eligibility. This keeps routes testable in isolation and business rules reusable across endpoints.</p>
+    </div>
+
+    <div id="p3-1" class="tab-panel">
+      <div class="endpoint-row"><span class="method post">POST</span><span class="endpoint-path">/auth/register</span><span class="endpoint-desc">Register, returns token pair</span></div>
+      <div class="endpoint-row"><span class="method post">POST</span><span class="endpoint-path">/auth/refresh</span><span class="endpoint-desc">Rotate access token</span></div>
+      <div class="endpoint-row"><span class="method get">GET</span><span class="endpoint-path">/books</span><span class="endpoint-desc">List user's books</span></div>
+      <div class="endpoint-row"><span class="method post">POST</span><span class="endpoint-path">/books</span><span class="endpoint-desc">Create book</span></div>
+      <div class="endpoint-row"><span class="method post">POST</span><span class="endpoint-path">/books/{id}/notes</span><span class="endpoint-desc">Add note to book</span></div>
+      <div class="endpoint-row"><span class="method put">PUT</span><span class="endpoint-path">/notes/{id}</span><span class="endpoint-desc">Edit note</span></div>
+      <div class="endpoint-row"><span class="method post">POST</span><span class="endpoint-path">/notes/{id}/comments</span><span class="endpoint-desc">Peer comment on note</span></div>
+      <div class="endpoint-row"><span class="method delete">DEL</span><span class="endpoint-path">/comments/{id}</span><span class="endpoint-desc">Delete comment</span></div>
+    </div>
+
+    <div id="p3-2" class="tab-panel">
+      <div class="code-block">POST /auth/register
+{ "email": "peer@example.com", "password": "••••••••" }
+
+HTTP 201 Created
+{
+  "access_token": "eyJhbGci...",
+  "refresh_token": "eyJhbGci...",
+  "token_type": "bearer"
+}
+
+──────────────────────────────────────────
+POST /notes/12/comments
+Authorization: Bearer eyJhbGci...
+{ "content": "Great summary of chapter 3." }
+
+HTTP 201 Created
+{
+  "id": 44,
+  "note_id": 12,
+  "author": "peer@example.com",
+  "content": "Great summary of chapter 3.",
+  "created_at": "2025-04-08T11:40:00Z"
+}</div>
+    </div>
+
+    <div id="p3-3" class="tab-panel">
+      <p class="decision-text">
+        <strong>Why access + refresh tokens?</strong> Short-lived access tokens (15 min) limit exposure if a token leaks. The refresh token rotates on use — if an attacker replays a stolen refresh token after it's been rotated, the server detects reuse and can revoke the session entirely.<br><br>
+        <strong>Why a services layer?</strong> Without it, route handlers accumulate business logic until they're unreadable and untestable. The services layer enforces a boundary: routes handle HTTP, services handle logic. Swapping FastAPI for another framework later requires only changing the route layer.
+      </p>
+    </div>
+
+    <div class="link-row">
+      <a class="pill-link" href="https://memo-stack-production.up.railway.app/docs" target="_blank" rel="noopener">↗ Live API docs</a>
+      <a class="pill-link" href="https://github.com/MohdMaaz000" target="_blank" rel="noopener">↗ GitHub</a>
+      <span class="badge badge-purple">deployed · Railway</span>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Engineering approach -->
+  <div style="margin-bottom:2.5rem">
+    <p class="section-label">Engineering approach</p>
+    <h2 style="margin-bottom:1.25rem">How I handle core backend concerns</h2>
+    <div class="eng-card">
+      <div class="concern-row">
+        <span class="concern-label">authentication</span>
+        <span class="concern-text">JWT access + refresh token pattern across all three projects. Access tokens are short-lived; refresh tokens rotate on use. In MemoStack, token reuse detection allows full session revocation. Auth logic lives in the service layer, not inside route handlers.</span>
+      </div>
+      <div class="concern-row">
+        <span class="concern-label">database design</span>
+        <span class="concern-text">Schema managed through Alembic migrations — never <code>create_all()</code> in production. Foreign key relationships enforced at the DB level. SQLite for local dev, PostgreSQL for production; SQLAlchemy abstracts the difference without changing application code.</span>
+      </div>
+      <div class="concern-row">
+        <span class="concern-label">error handling</span>
+        <span class="concern-text">Global exception handlers registered at the app level return a consistent error shape: <code>{ code, message, detail }</code>. 4xx for client errors, 5xx for server failures — never reversed. Route handlers don't contain try/catch blocks.</span>
+      </div>
+      <div class="concern-row">
+        <span class="concern-label">validation</span>
+        <span class="concern-text">Pydantic schemas define request and response shapes in FastAPI projects. Validation errors surface as structured 422 responses before any business logic runs. Flask project uses Marshmallow for the same boundary enforcement.</span>
+      </div>
+      <div class="concern-row">
+        <span class="concern-label">testing</span>
+        <span class="concern-text">Pytest with a dedicated test database. Tests exercise the full stack — HTTP request through to DB query — not mocked services. Auth edge cases (expired tokens, wrong credentials, ownership violations) are tested explicitly, not assumed.</span>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Footer -->
+  <div class="footer">
+    <a class="pill-link" href="https://github.com/MohdMaaz000" target="_blank" rel="noopener">↗ GitHub</a>
+    <a class="pill-link" href="mailto:Mohd.maaz.040323@gmail.com">↗ Email</a>
+    <a class="pill-link" href="https://www.linkedin.com/in/mohd-maaz-1b5b35366/" target="_blank" rel="noopener">↗ LinkedIn</a>
+    <span class="footer-note">open to backend roles</span>
+  </div>
+
+</div>
+
+<script>
+function switchTab(clickedTab, prefix) {
+  var row = clickedTab.parentElement;
+  var tabs = row.querySelectorAll('.tab');
+  var idx = Array.from(tabs).indexOf(clickedTab);
+  tabs.forEach(function(t) { t.classList.remove('active'); });
+  clickedTab.classList.add('active');
+  for (var i = 0; i < 4; i++) {
+    var panel = document.getElementById(prefix + '-' + i);
+    if (panel) {
+      panel.classList.remove('active');
+      if (i === idx) panel.classList.add('active');
+    }
+  }
+}
+</script>
+</body>
+</html>
